@@ -113,17 +113,17 @@
         function addMaterialDetail(detail){
             var MaterialInId = detail.id || ''
             var MaterialId = detail.material_id || ''
-            var MaterialName = detail.id || ''
+            var MaterialName = detail.insert_details.material.name || ''
             var qty = detail.qty || ''
 
             let div = document.createElement('div')
             div.setAttribute('class', 'mb-3 border border-1 p-1 d-flex details')
 
             let div2 = document.createElement('div')
-            div2.setAttribute('class', 'mx-1')
+            div2.setAttribute('class', 'mx-1 col-8')
 
             let div3 = document.createElement('div')
-            div3.setAttribute('class', 'mx-1')
+            div3.setAttribute('class', 'mx-1 col-4')
 
             materiInsertForm.append(div)
             $(div).append(div2)
@@ -164,9 +164,9 @@
             noteInsInput.value = materialOut.note || null
             descInsInput.value = materialOut.desc || null
             deleteInsId.value = materialOut.id || null
-            console.log(materialOut.details)
-            materialOut.details?.map(function(detail){
-                console.log(detail.id)
+            console.log(materialOut)
+            materialOut.detail_outs?.map(function(detail){
+                
                 addMaterialDetail(detail)
             })
         }
@@ -176,8 +176,10 @@
             materialDatatable.DataTable().search(tag).draw()
 
         $(document).on('click', '.addMaterialInsButton', function(){
+            $(materialFormModalLabel).html("{{__('Add New Material Outs')}}")
             deletePutMethodInput();
             setMaterialOutsValue({});
+
             deleteForm.style.display = "none";
 
             removeMaterialDetail()
@@ -186,6 +188,7 @@
         });
 
         $(document).on('click', '.editMaterialInsertButton', function(){
+            $(materialFormModalLabel).html("{{__('Edit Material Outs')}}")
             const materialOutId = $(this).data('material-id');
             const materialOut = materialIns.find(materialOut => materialOut.id === materialOutId);
             deleteForm.style.display = "block";
@@ -253,7 +256,7 @@
                 processing:true,
                 serverSide:true,
                 ajax: {
-                    url: '{{ action('\App\Http\Controllers\Api\DatatableController', 'MaterialOut') }}',
+                    url: '{{ action('\App\Http\Controllers\Api\DatatableController', 'MaterialOut') }}?with=detail_outs.insert_details.material',
                     dataSrc: json => {
                         materialIns = json.data;
                         return json.data;

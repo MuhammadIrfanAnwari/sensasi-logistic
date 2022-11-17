@@ -122,7 +122,7 @@
          
 
         $(document).on('click', '.addMaterialButton', function() {
-            materialFormModalLabel.innerHTML = '{{ __('Add new material') }}';
+            $(materialFormModalLabel).html("{{__('Add New Material Outs')}}")
 
 
             deletePutMethodInput();
@@ -133,7 +133,7 @@
         })
 
         $(document).on('click', '.editMaterialButton', function() {
-            materialFormModalLabel.innerHTML = '{{ __('Edit material') }}';
+            $(materialFormModalLabel).html("{{__('Add New Material Outs')}}")
 
             const materialId = $(this).data('material-id');
             const material = materials.find(material => material.id === materialId);

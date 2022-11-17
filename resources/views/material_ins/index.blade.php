@@ -184,6 +184,7 @@
             materialDatatable.DataTable().search(tag).draw()
 
         $(document).on('click', '.addMaterialInsButton', function(){
+            $(materialFormModalLabel).html("{{__('Add New Material Insert')}}")
             deletePutMethodInput();
             setMaterialInsertValue({});
             deleteForm.style.display = "none";
@@ -194,6 +195,7 @@
         });
 
         $(document).on('click', '.editMaterialInsertButton', function(){
+            $(materialFormModalLabel).html("{{__('Edit Material Insert')}}")
             const materialInId = $(this).data('material-id');
             const materialIn = materialIns.find(materialIn => materialIn.id === materialInId);
             deleteForm.style.display = "block";
