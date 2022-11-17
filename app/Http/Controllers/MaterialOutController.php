@@ -4,13 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Models\MaterialIn;
-use App\Models\Material_in_details;
-
+use App\Models\MaterialOut;
+use App\Models\MaterialOutDetails;
 use Auth;
 
-
-class MaterialInController extends Controller
+class MaterialOutController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -19,7 +17,7 @@ class MaterialInController extends Controller
      */
     public function index()
     {
-        return view('material_ins.index');
+        return view('material_outs.index');
     }
 
     /**
@@ -47,23 +45,24 @@ class MaterialInController extends Controller
             'desc' => 'required'
         ]);
 
+
+
         $validatedInput['at'] = date('Y-m-d h:i:s');
         $validatedInput['last_updated_by_user_id'] = Auth::user()->id;
         $validatedInput['created_by_user_id'] = Auth::user()->id;
-        $materialIn = MaterialIn::create($validatedInput);
-
+        $materialOut = MaterialOut::create($validatedInput);
+        // dd($request->all());
         foreach($request->material_id as $row => $key){
-            $materialInDetail = new Material_in_details();
-            $materialInDetail->material_in_id = $materialIn->id;
-            $materialInDetail->material_id = $request->material_id[$row];
-            $materialInDetail->qty = $request->qty[$row];
-            $materialInDetail->price = $request->price[$row];
-            $materialInDetail->save();
+            $materialOutDetails = new MaterialOutDetails();
+            $materialOutDetails->material_out_id = $materialOut->id;
+            $materialOutDetails->mat_in_detail_id = $request->material_id[$row];
+            $materialOutDetails->qty = $request->qty[$row];
+            $materialOutDetails->save();
         }
 
-        return redirect(route('material_ins.index'))->with('message', [
+        return redirect(route('material_outs.index'))->with('message', [
           'class' => 'success',
-          'text' => 'Berhasil menambah Material Insert'
+          'text' => 'Berhasil menambah Material Output'
         ]);
     }
 
@@ -98,6 +97,7 @@ class MaterialInController extends Controller
      */
     public function update(Request $request, $id)
     {
+        dd($request->all());
         $validatedInput = $request->validate([
             'code' => 'nullable',
             'last_updated_by_user_id' => 'required',
@@ -107,7 +107,6 @@ class MaterialInController extends Controller
         ]);
 
         $validatedInput['at'] = date('Y-m-d h:i:s');
-        MaterialIn::find($id)->update($validatedInput);
 
         foreach($request->material_id as $row => $key){
             if ($materialInDetail = Material_in_details::find($request->idDetail[$row])) {
@@ -125,9 +124,9 @@ class MaterialInController extends Controller
             }
         }
 
-        return redirect(route('material_ins.index'))->with('message', [
+        return redirect(route('material_outs.index'))->with('message', [
           'class' => 'success',
-          'text' => 'Berhasil menambah Material Insert'
+          'text' => 'Berhasil Mengubah Material Outs'
         ]);
     }
 
@@ -139,10 +138,6 @@ class MaterialInController extends Controller
      */
     public function destroy($id)
     {
-        MaterialIn::find($id)->delete();
-        return redirect(route('material_ins.index'))->with('message', [
-          'class' => 'success',
-          'text' => 'Berhasil menambah Material Insert'
-        ]);
+        //
     }
 }

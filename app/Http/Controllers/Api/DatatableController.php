@@ -14,7 +14,7 @@ class DatatableController extends Controller
 			$modelClass = "App\Models\\$modelName";
 			// dd($modelClass::query());
 			if ($request->with) {
-				return DataTables::of($modelClass::with('details.material'))->make();
+				return DataTables::of($modelClass::with($request->with))->make();
 			} else {
 				return DataTables::of($modelClass::query())->make();
 			}

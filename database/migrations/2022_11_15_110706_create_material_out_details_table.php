@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateMaterialInDetailsTable extends Migration
+class CreateMaterialOutDetailsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,21 +13,20 @@ class CreateMaterialInDetailsTable extends Migration
      */
     public function up()
     {
-        Schema::connection('mysql')->create('material_in_details', function (Blueprint $table) {
+        Schema::connection('mysql')->create('material_out_details', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('material_in_id')
-            ->constrained('material_ins')
+            $table->foreignId('mat_in_detail_id')
+            ->constrained('material_in_details')
             ->cascadeOnUpdate()
             ->restrictOnDelete();
 
-            $table->foreignId('material_id')
-            ->constrained('materials')
+            $table->foreignId('material_out_id')
+            ->constrained('material_outs')
             ->cascadeOnUpdate()
             ->restrictOnDelete();
 
             $table->integer('qty');
-            $table->integer('price');
-            $table->unique('material_id','material_in_id');
+            $table->unique(['mat_in_detail_id','material_out_id']);
             $table->timestamps();
         });
     }
@@ -39,6 +38,6 @@ class CreateMaterialInDetailsTable extends Migration
      */
     public function down()
     {
-        Schema::connection('mysql')->dropIfExists('material_in_details');
+        Schema::connection('mysql')->dropIfExists('material_out_details');
     }
 }
