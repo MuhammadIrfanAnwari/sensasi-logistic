@@ -114,21 +114,21 @@ class MaterialInController extends Controller
         $materialIn = MaterialIn::with('details')->find($id);
         $materialIn->update($validatedInput);
 
-        $materialIds = $materialIn->map(fn ($materialIn) => $materialIn->material_id);
+        $materialIds = $materialIn->details->map(fn ($materialIn) => $materialIn->material_id);
+        
         $toBeDeletedIds = $materialIds->diff($request->material_id);
-
         $materialIn->details()->whereIn('material_id', $toBeDeletedIds)->delete();
 
-        foreach($request->material_id as $key => $materialId){
+        foreach($request->material_ids as $key => $materialId){
             if ($materialInDetail = MaterialInDetail::find($materialId)) {
-                $materialInDetail->material_id = $request->material_id[$key];
+                $materialInDetail->material_id = $request->material_ids[$key];
                 $materialInDetail->qty = $request->qty[$key];
                 $materialInDetail->price = $request->price[$key];
                 $materialInDetail->update();
             } else {
                 $materialInDetail = new MaterialInDetail();
                 $materialInDetail->material_in_id = $id;
-                $materialInDetail->material_id = $request->material_id[$key];
+                $materialInDetail->material_id = $request->material_ids[$key];
                 $materialInDetail->qty = $request->qty[$key];
                 $materialInDetail->price = $request->price[$key];
                 $materialInDetail->save();

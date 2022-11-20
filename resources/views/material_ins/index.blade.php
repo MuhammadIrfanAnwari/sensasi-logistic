@@ -313,7 +313,7 @@
                     name: 'details.material.name',
                     width: '20%',
                     render: details => details.map(detail => renderTagButton(
-                        `${detail.material.name} (${detail.qty})`)).join('')
+                        `${detail.material?.name} (${detail.qty})`)).join('')
                 }, {
                     render: function(data, type, row) {
                         const editButton = $(
