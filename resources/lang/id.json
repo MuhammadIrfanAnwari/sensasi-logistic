@@ -23,7 +23,6 @@
   "Material in": "Bahan masuk",
   "Material In": "Bahan Masuk",
   "Material In List": "Daftar Bahan Masuk",
-  "Code": "Kode",
   "At": "Pada",
   "Type": "Jenis",
   "Items": "Barang",
@@ -35,5 +34,10 @@
   "Price": "Harga",
   "New material": "Bahan baru",
   "More": "Lebih banyak",
-  "Add new material in": "Tambah bahan masuk"
+  "Add new material in": "Tambah bahan masuk",
+
+  "Material out": "Bahan keluar",
+  "Material Out": "Bahan keluar",
+  "Material Out List": "Daftar Bahan Keluar",
+  "Add new material out": "Tambah bahan keluar"
 }
