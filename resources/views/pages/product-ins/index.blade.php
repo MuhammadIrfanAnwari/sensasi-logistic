@@ -1,6 +1,6 @@
 @extends('layouts.main')
 
-@section('title', __('Material In'))
+@section('title', __('Product In'))
 
 @include('components.assets._datatable')
 @include('components.assets._select2')
@@ -9,9 +9,9 @@
 
     <div class="section-body">
         <h2 class="section-title">
-            {{ __('Material In List') }}
-            <button type="button" class="ml-2 btn btn-success addMaterialInsButton" data-toggle="modal"
-                data-target="#materialInsertFormModal">
+            {{ __('Product In List') }}
+            <button type="button" class="ml-2 btn btn-success addProductInsButton" data-toggle="modal"
+                data-target="#productInsertFormModal">
                 <i class="fas fa-plus-circle"></i> Tambah
             </button>
         </h2>
@@ -19,7 +19,7 @@
         <div class="card">
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-striped" id="materialInDatatable" style="width:100%">
+                    <table class="table table-striped" id="productInDatatable" style="width:100%">
                     </table>
                 </div>
             </div>
@@ -28,19 +28,19 @@
 @endsection
 
 @push('js')
-    <div class="modal fade" id="materialInsertFormModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel"
+    <div class="modal fade" id="productInsertFormModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel"
         aria-hidden="">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title" id="materialFormModalLabel">{{ __('Add new material in') }}</h5>
+                    <h5 class="modal-title" id="productFormModalLabel">{{ __('Add new Product in') }}</h5>
                     <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body" id="modal_body_material">
+                <div class="modal-body" id="modal_body_product">
 
-                    <form method="POST" id="materialInForm" onsubmit="return validateInputs();">
+                    <form method="POST" id="productInForm" onsubmit="return validateInputs();">
                         @csrf
 
                         <input type="hidden" name="id" id="idIns">
@@ -69,37 +69,30 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="descInsInput">{{ __('Description') }}</label>
-                            <input type="text" class="form-control" name="desc" required id="descInsInput">
-                        </div>
-
-                        <div class="form-group">
                             <label for="noteInsInput">{{ __('Note') }}</label>
                             <textarea class="form-control" name="note" id="noteInsInput" rows="3" style="height:100%;"></textarea>
                         </div>
 
                         <div class="px-1" style="overflow-x: auto">
-                            <div id="materialInDetailsParent" style="width: 100%">
+                            <div id="productInDetailsParent" style="width: 100%">
                                 <div class="row m-0">
-                                    <label class="col-4">{{ __('Name') }}</label>
-                                    <label class="col-2">{{ __('Qty') }}</label>
-                                    <label class="col-3">{{ __('Price') }}</label>
-                                    <label class="col-2">{{ __('Subtotal') }}</label>
+                                    <label class="col-7">{{ __('Name') }}</label>
+                                    <label class="col-4">{{ __('Qty') }}</label>
                                 </div>
                             </div>
                         </div>
 
 
                         <div class="">
-                            <a href="#" id="addMaterialButton" class="btn btn-success btn-sm mr-2"><i
+                            <a href="#" id="addProductButton" class="btn btn-success btn-sm mr-2"><i
                                     class="fas fa-plus"></i> {{ __('More') }}</a>
-                            <a href="{{ route('materials.index') }}">{{ __('New material') }}?</a>
+                            <a href="{{ route('products.index') }}">{{ __('New product') }}?</a>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer d-flex justify-content-between">
                     <div>
-                        <button type="submit" form="materialInForm"
+                        <button type="submit" form="productInForm"
                             class="btn btn-outline-success">{{ __('Save') }}</button>
                     </div>
                     <form action="" method="post" id="deleteForm">
@@ -116,84 +109,62 @@
     </div>
 
     <script>
-        let materialIns
-        let materialInDatatable = $('#materialInDatatable')
-        let selectedMaterialIds = [];
+        let productIns
+        let productInDatatable = $('#productInDatatable')
+        let selectedProductIds = [];
 
         const typeSelect = $('#typeSelect')
-        const materialFormModalLabel = $('#materialFormModalLabel')
+        const productFormModalLabel = $('#productFormModalLabel')
 
-        const datatableSearch = tag => materialInDatatable.DataTable().search(tag).draw()
+        const datatableSearch = tag => productInDatatable.DataTable().search(tag).draw()
         const renderTagButton = text =>
             `<a href="#" onclick="datatableSearch('${text.split(' ')[0]}')" class="m-1 badge badge-primary">${text}</a>`
 
-        function addMaterialInDetailRow(detail) {
+        function addProductInDetailRow(detail) {
             const nDetailInputSet = $('.detailInputSetDiv').length
 
             const detailRowDiv = document.createElement('div')
             detailRowDiv.setAttribute('class', 'form-group row mx-0 align-items-center detailInputSetDiv')
-            materialInDetailsParent.append(detailRowDiv);
+            productInDetailsParent.append(detailRowDiv);
 
-            function getMaterialSelect () {
-                const materials = {{ Js::from(App\Models\Material::all()) }};
+            function getProductSelect () {
+                const products = {{ Js::from(App\Models\Product::all()) }};
 
-                const initMaterialsSelect = $selectDom => $selectDom.select2({
-                    dropdownParent: $('#modal_body_material'),
-                    placeholder: '{{ __('Material') }}',
+                const initProductsSelect = $selectDom => $selectDom.select2({
+                    dropdownParent: $('#modal_body_product'),
+                    placeholder: '{{ __('Product') }}',
                     data: [{
                         id: null,
                         text: null
-                    }].concat(materials.map(material => {
+                    }].concat(products.map(product => {
                         return {
-                            id: material.id,
-                            text: material.name
+                            id: product.id,
+                            text: product.name
                         }
                     }))
                 });
 
-                const materialSelectParentDiv = document.createElement('div')
-                materialSelectParentDiv.setAttribute('class', 'col-4 pl-0 pr-2')
-                const $selectDom = $(`<select required placeholder="{{ __('Material name') }}"></select>`)
-                    .addClass('form-control materialSelect')
-                    .attr('name', `details[${nDetailInputSet}][material_id]`)
-                $(materialSelectParentDiv).append($selectDom)
+                const productSelectParentDiv = document.createElement('div')
+                productSelectParentDiv.setAttribute('class', 'col-7 pl-0 pr-2')
+                const $selectDom = $(`<select required placeholder="{{ __('Product name') }}"></select>`)
+                    .addClass('form-control productSelect')
+                    .attr('name', `details[${nDetailInputSet}][product_id]`)
+                $(productSelectParentDiv).append($selectDom)
                 console.log(detail)
-                initMaterialsSelect($selectDom);
-                $selectDom.val(detail.material_id).change();
+                initProductsSelect($selectDom);
+                $selectDom.val(detail.product_id).change();
 
-                return materialSelectParentDiv
-            }
-
-            function getSubtotalDiv() {
-                const temp = document.createElement('div')
-                temp.setAttribute('class', 'col-2 px-2')
-                
-                const subtotal = detail.qty * detail.price
-                if (subtotal) {
-                    temp.innerHTML = subtotal.toLocaleString('id', {
-                        style: 'currency',
-                        currency: 'IDR',
-                        maximumFractionDigits: 0 
-                    })
-                }
-                
-                return temp;
+                return productSelectParentDiv
             }
 
 
-            $(detailRowDiv).append(getMaterialSelect())
+            $(detailRowDiv).append(getProductSelect())
 
 
             const qtyInputParentDiv = document.createElement('div')
-            qtyInputParentDiv.setAttribute('class', 'col-2 px-2')
+            qtyInputParentDiv.setAttribute('class', 'col-4 px-2')
             $(qtyInputParentDiv).append(
                 `<input class="form-control" name="details[${nDetailInputSet}][qty]" min="0" type="number" required placeholder="{{ __('Qty') }}" value="${detail.qty || ''}">`
-            )
-
-            const priceInputParentDiv = document.createElement('div')
-            priceInputParentDiv.setAttribute('class', 'col-3 px-2')
-            $(priceInputParentDiv).append(
-                `<input class="form-control" name="details[${nDetailInputSet}][price]" min="0" type="number" required placeholder="{{ __('Price') }}" value="${detail.price || ''}">`
             )
 
             
@@ -211,8 +182,6 @@
 
 
             $(detailRowDiv).append(qtyInputParentDiv)
-                .append(priceInputParentDiv)
-                .append(getSubtotalDiv())
 
             if (nDetailInputSet !== 0) {
                 $(detailRowDiv).append(getRemoveRowButtonParentDiv())
@@ -224,29 +193,28 @@
         }
 
         const addPutMethodInputInsert = () => {
-            $('#materialInForm').append($('@method('put')'))
+            $('#productInForm').append($('@method('put')'))
         }
 
 
-        const setMaterialInFormValue = materialIn => {
+        const setProductInFormValue = productIn => {
 
-            if (materialIn.type) {
+            if (productIn.type) {
                 const selectOpts = typeSelect.find('option');
                 const optValues = selectOpts.map((i, select) => select.innerHTML);
-                if ($.inArray(materialIn.type, optValues) === -1) {
-                    typeSelect.append(`<option>${materialIn.type}</option>`);
+                if ($.inArray(productIn.type, optValues) === -1) {
+                    typeSelect.append(`<option>${productIn.type}</option>`);
                 };
             }
 
-            typeSelect.val(materialIn.type || null).trigger('change');
-            idIns.value = materialIn.id || null
-            codeInsInput.value = materialIn.code || null
-            noteInsInput.value = materialIn.note || null
-            descInsInput.value = materialIn.desc || null
-            deleteInsId.value = materialIn.id || null
+            typeSelect.val(productIn.type || null).trigger('change');
+            idIns.value = productIn.id || null
+            codeInsInput.value = productIn.code || null
+            noteInsInput.value = productIn.note || null
+            deleteInsId.value = productIn.id || null
 
-            if (materialIn.at) {
-                const dateObj = new Date(materialIn.at);
+            if (productIn.at) {
+                const dateObj = new Date(productIn.at);
 
                 const month = dateObj.getMonth() + 1; //months from 1-12
                 const day = dateObj.getDate();
@@ -257,63 +225,63 @@
                 atInput.value = '{{ date('Y-m-d') }}'
             }
 
-            materialIn.details?.map(function(detail) {
-                addMaterialInDetailRow(detail)
+            productIn.details?.map(function(detail) {
+                addProductInDetailRow(detail)
             })
         }
 
 
-        $(document).on('click', '.addMaterialInsButton', function() {
+        $(document).on('click', '.addProductInsButton', function() {
             deletePutMethodInput();
-            setMaterialInFormValue({});
+            setProductInFormValue({});
             deleteForm.style.display = "none";
 
             $('.detailInputSetDiv').remove()
 
 
-            for (let i = 0; i < 3; i++) {
-                addMaterialInDetailRow({})
-            }
+            addProductInDetailRow({})
+            addProductInDetailRow({})
+            addProductInDetailRow({})
 
-            materialInForm.action = "{{ route('material-ins.store') }}";
+            productInForm.action = "{{ route('product-ins.store') }}";
         });
 
-        $(document).on('click', '.editMaterialInsertButton', function() {
-            const materialInId = $(this).data('material-id');
-            const materialIn = materialIns.find(materialIn => materialIn.id === materialInId);
+        $(document).on('click', '.editProductInsertButton', function() {
+            const productInId = $(this).data('product-id');
+            const productIn = productIns.find(productIn => productIn.id === productInId);
             deleteForm.style.display = "block";
 
             $('.detailInputSetDiv').remove()
 
             addPutMethodInputInsert();
-            setMaterialInFormValue(materialIn);
+            setProductInFormValue(productIn);
 
-            materialInForm.action = "{{ route('material-ins.update', '') }}/" + materialIn.id;
+            productInForm.action = "{{ route('product-ins.update', '') }}/" + productIn.id;
 
-            deleteForm.action = "{{ route('material-ins.destroy', '') }}/" + materialIn
+            deleteForm.action = "{{ route('product-ins.destroy', '') }}/" + productIn
                 .id;
         })
 
-        $(document).on('click', '#addMaterialButton', function() {
-            addMaterialInDetailRow({})
+        $(document).on('click', '#addProductButton', function() {
+            addProductInDetailRow({})
         })
 
         function validateInputs() {
-            const selectedMaterialIds = []
+            const selectedProductIds = []
             let isValid = true;
 
             $('.text-danger').remove();
 
-            [...document.getElementsByClassName('materialSelect')].map(selectEl => {
-                if (selectedMaterialIds.includes(selectEl.value)) {
+            [...document.getElementsByClassName('productSelect')].map(selectEl => {
+                if (selectedProductIds.includes(selectEl.value)) {
                     const errorTextDiv = document.createElement('div');
-                    errorTextDiv.innerHTML = '{{ __('Material is duplicated') }}';
+                    errorTextDiv.innerHTML = '{{ __('Product is duplicated') }}';
                     errorTextDiv.classList.add('text-danger')
 
                     selectEl.parentNode.append(errorTextDiv)
                     isValid = false;
                 } else {
-                    selectedMaterialIds.push(selectEl.value)
+                    selectedProductIds.push(selectEl.value)
                 }
             })
             
@@ -323,10 +291,10 @@
         $(document).ready(function() {
             $('#typeSelect').select2('destroy').select2({
                 tags: true,
-                dropdownParent: $('#modal_body_material')
+                dropdownParent: $('#modal_body_product')
             })
 
-            materialInDatatable = materialInDatatable.dataTable({
+            productInDatatable = productInDatatable.dataTable({
                 processing: true,
                 search: {
                     return: true,
@@ -336,9 +304,9 @@
                 },
                 serverSide: true,
                 ajax: {
-                    url: '{{ action('\App\Http\Controllers\Api\DatatableController', 'MaterialIn') }}?with=details.material',
+                    url: '{{ action('\App\Http\Controllers\Api\DatatableController', 'ProductIn') }}?with=details.product',
                     dataSrc: json => {
-                        materialIns = json.data;
+                        productIns = json.data;
                         return json.data;
                     },
                     beforeSend: function(request) {
@@ -364,19 +332,19 @@
                     orderable: false,
                     title: '{{ __('Items') }}',
                     data: 'details',
-                    name: 'details.material.name',
+                    name: 'details.product.name',
                     width: '20%',
                     render: details => details.map(detail => renderTagButton(
-                        `${detail.material?.name} (${detail.qty})`)).join('')
+                        `${detail.product?.name} (${detail.qty})`)).join('')
                 }, {
                     render: function(data, type, row) {
                         const editButton = $(
                             '<a class="btn-icon-custom" href="#"><i class="fas fa-cog"></i></a>'
                         )
                         editButton.attr('data-toggle', 'modal')
-                        editButton.attr('data-target', '#materialInsertFormModal')
-                        editButton.addClass('editMaterialInsertButton');
-                        editButton.attr('data-material-id', row.id)
+                        editButton.attr('data-target', '#productInsertFormModal')
+                        editButton.addClass('editProductInsertButton');
+                        editButton.attr('data-product-id', row.id)
                         return editButton.prop('outerHTML')
                     },
                     orderable: false

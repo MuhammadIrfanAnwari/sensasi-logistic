@@ -2,22 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Material;
 use Illuminate\Http\Request;
 
 use App\Models\MaterialOut;
 use App\Models\MaterialOutDetail;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class MaterialOutController extends Controller
 {
     private function validateInput(Request $request, int $materialOutId = null)
     {
         $materialOutFromInput = $request->validate([
-            'code' => 'nullable|string|unique:mysql.material_outs,code' . ($materialOutId ? ", $materialOutId" : null),
+            'code' => 'nullable|string|unique:mysql.material_outs,code' . ($materialOutId ? ",$materialOutId,id" : null),
             'type' => 'required|string',
             'note' => 'nullable|string',
-            'desc' => 'required|string',
             'at' => 'required|date'
         ]);
 
@@ -30,28 +29,6 @@ class MaterialOutController extends Controller
         $materialOutFromInput['last_updated_by_user_id'] = Auth::user()->id;
 
         return [$materialOutFromInput, $materialOutDetailsFromInput];
-    }
-
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        $types = DB::connection('mysql')->table('material_outs')->select('type')->distinct()->get()->pluck('type');
-        return view('material_outs.index', compact('types'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -74,39 +51,17 @@ class MaterialOutController extends Controller
             MaterialOutDetail::insert($materialOutDetailsFromInput);
         }
 
-        return redirect(route('material-outs.index'))->with('notifications', [
-            [__('Material out data has been added successfully'), 'success']
+        return redirect()->route('materials.index', '#out')->with('notifications', [
+            [__('Material out data ') . " $materialOut->at->format('d-M-Y') " . __('has been added successfully'), 'success']
 
         ]);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    private function getToBeDeletedMaterialInDetailIds(MaterialOut $materialOut, Array $materialOutDetailsFromInput)
+    private function getToBeDeletedMaterialInDetailIds(MaterialOut $materialOut, array $materialOutDetailsFromInput)
     {
         $existsMaterialInDetailIds = $materialOut->details->pluck('material_in_detail_id');
         $materialInDetailIdsFromInput = collect($materialOutDetailsFromInput)->pluck('material_in_detail_id');
-        
+
         return $existsMaterialInDetailIds->diff($materialInDetailIdsFromInput);
     }
 
@@ -143,13 +98,10 @@ class MaterialOutController extends Controller
             );
         }
 
-        return redirect(route('material-outs.index'))->with('notifications', [
-            [__('Material out data has been updated successfully'), 'success']
-        ]);
-    }
+        return redirect()->route('materials.index', '#out')->with('notifications', [
+            [__('Material out data ') . " $materialOut->at " . __('has been updated successfully'), 'success']
 
-    private function validateUpdate(Request $request) {
-        
+        ]);
     }
 
     /**
@@ -158,9 +110,12 @@ class MaterialOutController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(MaterialOut $materialOut)
     {
-        MaterialOut::find($id)->delete();
-        return redirect(route('material-outs.index'))->with('notifications', [[__('Material out data has been deleted'), 'warning']]);
+        $materialOut->delete();
+        return redirect()->route('materials.index', '#out')->with('notifications', [
+            [__('Material out data') . " $materialOut->at " . __('has been deleted successfully'), 'warning']
+
+        ]);
     }
 }

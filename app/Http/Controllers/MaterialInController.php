@@ -7,18 +7,15 @@ use Illuminate\Http\Request;
 use App\Models\MaterialIn;
 use App\Models\MaterialInDetail;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use stdClass;
 
 class MaterialInController extends Controller
 {
     private function validateInput(Request $request, int $materialInId = null)
     {
         $materialInFromInput = $request->validate([
-            'code' => 'nullable|string|unique:mysql.material_ins,code,' . ($materialInId ? ",$materialInId" : null),
+            'code' => 'nullable|string|unique:mysql.material_ins,code' . ($materialInId ? ",$materialInId,id" : null),
             'type' => 'required|string',
             'note' => 'nullable|string',
-            'desc' => 'required|string',
             'at' => 'required|date'
         ]);
 
@@ -32,28 +29,6 @@ class MaterialInController extends Controller
         $materialInFromInput['last_updated_by_user_id'] = Auth::user()->id;
 
         return [$materialInFromInput, $materialInDetailsFromInput];
-    }
-
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        $types = DB::connection('mysql')->table('material_ins')->select('type')->distinct()->get()->pluck('type');
-        return view('material_ins.index', compact('types'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -76,31 +51,9 @@ class MaterialInController extends Controller
             MaterialInDetail::insert($materialInDetailsFromInput);
         }
 
-        return redirect(route('material-ins.index'))->with('notifications', [
-            [__('Material in data has been added successfully'), 'success']
+        return redirect()->route('materials.index', '#in')->with('notifications', [
+            [__('Material in data') . " $materialIn->at " . __('has been added successfully'), 'success']
         ]);
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
     }
 
     private function getToBeDeletedMaterialIds(MaterialIn $materialIn, array $materialInDetailsFromInput)
@@ -143,8 +96,8 @@ class MaterialInController extends Controller
             );
         }
 
-        return redirect(route('material-ins.index'))->with('notifications', [
-            [__('Material in data has been updated successfully'), 'success']
+        return redirect()->route('materials.index', '#in')->with('notifications', [
+            [__('Material in data ') . " $materialIn->at " . __('has been updated successfully'), 'success']
         ]);
     }
 
@@ -157,8 +110,8 @@ class MaterialInController extends Controller
     public function destroy(MaterialIn $materialIn)
     {
         $materialIn->delete();
-        return redirect(route('material-ins.index'))->with('notifications', [
-            [__('Material in data has been deleted'), 'warning']
+        return redirect()->route('materials.index', '#in')->with('notifications', [
+            [__('Material in data') . " $materialIn->at " . __('has been deleted successfully'), 'warning']
         ]);
     }
 }
