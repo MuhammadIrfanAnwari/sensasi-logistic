@@ -52,7 +52,7 @@ class MaterialInController extends Controller
         }
 
         return redirect()->route('materials.index', '#in')->with('notifications', [
-            [__('Material in data') . " $materialIn->at " . __('has been added successfully'), 'success']
+            [__('Material in data') . " <b>" . $materialIn->at->format('d-m-Y') . "</b> " . __('has been added successfully'), 'success']
         ]);
     }
 
@@ -82,6 +82,10 @@ class MaterialInController extends Controller
 
             $toBeDeletedMaterialIds = $this->getToBeDeletedMaterialIds($materialIn, $materialInDetailsFromInput);
 
+            // TODO: Check outDetails before delete;
+            $deleteQuery = $materialIn->details()->with('outDetails')->whereIn('material_id', $toBeDeletedMaterialIds);
+            $toBeDeletedMaterialIds = $deleteQuery->get()->map(fn ($detail) => $detail->outDetails ? null : $detail->material_id );
+
             if ($toBeDeletedMaterialIds->isNotEmpty()) {
                 $materialIn
                     ->details()
@@ -97,7 +101,7 @@ class MaterialInController extends Controller
         }
 
         return redirect()->route('materials.index', '#in')->with('notifications', [
-            [__('Material in data ') . " $materialIn->at " . __('has been updated successfully'), 'success']
+            [__('Material in data ') . " <b>" . $materialIn->at->format('d-m-Y') . "</b> " . __('has been updated successfully'), 'success']
         ]);
     }
 
@@ -109,9 +113,16 @@ class MaterialInController extends Controller
      */
     public function destroy(MaterialIn $materialIn)
     {
+        if ($materialIn->outDetails()->count() > 0) {
+            return redirect()->route('materials.index', '#in')->with('notifications', [
+                [__('Material in data') . " <b>" . $materialIn->at->format('d-m-Y') . "</b> " . __('cannot be deleted. Material(s) has been used'), 'danger']
+            ]);
+        }
+
+
         $materialIn->delete();
         return redirect()->route('materials.index', '#in')->with('notifications', [
-            [__('Material in data') . " $materialIn->at " . __('has been deleted successfully'), 'warning']
+            [__('Material in data') . " <b>" . $materialIn->at->format('d-m-Y') . "</b> " . __('has been deleted successfully'), 'warning']
         ]);
     }
 }
