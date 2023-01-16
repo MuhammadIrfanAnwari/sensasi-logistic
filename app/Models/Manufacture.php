@@ -14,7 +14,7 @@ class Manufacture extends Model
 
     protected $connection = 'mysql';
 
-    protected $fillable = ['code', 'at', 'created_at', 'created_by_user_id', 'material_out_id', 'product_in_id','note'];
+    protected $guarded = ['id'];
 
     protected $dates = [
         'at'
@@ -24,12 +24,12 @@ class Manufacture extends Model
     {
         parent::boot();
 
-        static::created(function (self $Manufacture) {
-            Helper::logAction('created', $Manufacture);
+        static::created(function (self $manufacture) {
+            Helper::logAction('created', $manufacture);
         });
 
-        static::updated(function (self $Manufacture) {
-            Helper::logAction('updated', $Manufacture);
+        static::updated(function (self $manufacture) {
+            Helper::logAction('updated', $manufacture);
         });
     }
 

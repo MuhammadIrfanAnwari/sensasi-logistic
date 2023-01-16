@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AppSystemController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InitializeAppController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\MaterialInController;
@@ -14,9 +15,6 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\MaterialReportController;
 use App\Http\Controllers\ProductReportController;
 use App\Http\Controllers\ManufactureReportController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\url_generate;
-use App\Http\Controllers\Url_generatorController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\App;
 
@@ -74,8 +72,10 @@ Route::middleware('guest')->group(function () {
     });
 });
 
+
 Route::middleware('auth')->group(function () {
-    Route::get('/', [DashboardController::class, 'index'])->name('/');
+    Route::get('/', fn () => redirect()->route('dashboard'))->name('/');
+    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::post('logout', [AuthController::class, 'logout'])->name('auth.logout');
 
     Route::controller(AppSystemController::class)->group(function () {

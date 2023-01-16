@@ -1,6 +1,26 @@
 @extends('layouts.main')
+@section('title', __('Material Report'))
 
-@section('title', __('Material'))
+@push('css')
+    <style>
+        @media print {
+            body {
+                all: unset !important;
+            }
+
+            body>*:not(.print-only) {
+                display: none !important;
+            }
+
+        }
+
+        @media not print {
+            .print-only {
+                display: none !important
+            }
+        }
+    </style>
+@endpush
 
 @section('main-content')
     <div class="section-body">
@@ -30,15 +50,16 @@
 
 @push('js')
     <script>
-        window.onhashchange = function () {
+        window.onhashchange = function() {
             const activeTab = location.hash.replace(/^#/, '') || 'in'
             $(`#pageTab a[href="#${activeTab}"].nav-link`).tab('show')
         }
 
         window.onhashchange()
-        
+
         $('#pageTab a.nav-link').on('click', function(e) {
-            window.history.pushState(null, null, `materials${e.target.hash}`)
+            const queryString = window.location.search;
+            window.history.pushState(null, null, `materials${queryString}${e.target.hash}`)
         })
     </script>
 @endpush
