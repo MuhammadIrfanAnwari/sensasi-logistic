@@ -14,6 +14,9 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\MaterialReportController;
 use App\Http\Controllers\ProductReportController;
 use App\Http\Controllers\ManufactureReportController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\url_generate;
+use App\Http\Controllers\Url_generatorController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\App;
 
@@ -72,7 +75,7 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
-    Route::get('/', fn () => null)->name('/');
+    Route::get('/', [DashboardController::class, 'index'])->name('/');
     Route::post('logout', [AuthController::class, 'logout'])->name('auth.logout');
 
     Route::controller(AppSystemController::class)->group(function () {
@@ -106,7 +109,7 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('products', ProductController::class)->except([
         'create', 'show', 'edit'
-    ]);
+    ]);   
 
     Route::resource('product-ins', ProductInController::class)->except([
         'create', 'show', 'edit'
@@ -116,6 +119,8 @@ Route::middleware('auth')->group(function () {
         'create', 'show', 'edit'
     ]);
 
+
+
     Route::resource('manufactures', ManufactureController::class)->except([
         'create', 'show', 'edit'
     ]);
@@ -124,3 +129,13 @@ Route::middleware('auth')->group(function () {
         Route::get('basic-page-format', fn () => view('basic-page-format'));
     }
 });
+
+
+Route::get('generate', [url_generate::class, 'generate']);
+
+Route::get('valid-url/{data}', [url_generate::class, 'index'])->name('valid-url');
+Route::post('store-manufacture', [url_generate::class, 'store'])->name('store-manufacture');
+
+Route::get('url_generator', [Url_generatorController::class, 'index'])->name('url_generator.index')->middleware('signed');
+
+Route::post('url_generator/store', [Url_generatorController::class, 'store'])->name('url_generator.store');

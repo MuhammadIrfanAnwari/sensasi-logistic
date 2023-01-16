@@ -341,8 +341,6 @@
                     addProductInDetailRow({})
                 })
 
-                // ################## DATATABLE SECTION
-
                 const datatableSearch = tag => manufactureCrudDiv.materialOutDatatable.DataTable().search(tag).draw()
 
                 manufactureCrudDiv.materialOutDatatable = $(materialOutDatatable).dataTable({
